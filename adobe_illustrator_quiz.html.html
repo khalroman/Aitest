@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест з Adobe Illustrator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        #quiz-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 50%;
+            margin: auto;
+            box-shadow: 0px 0px 10px gray;
+        }
+        #timer {
+            font-size: 20px;
+            color: red;
+            font-weight: bold;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .answer {
+            display: block;
+            padding: 10px;
+            margin: 5px;
+            background: lightblue;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .answer:hover {
+            background: deepskyblue;
+        }
+        #result {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #next-button {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="quiz-container">
+        <h2>Тест з Adobe Illustrator</h2>
+        <div id="timer">Час: 20</div>
+        <div id="question-container">
+            <div class="question" id="question-text"></div>
+            <div id="answers"></div>
+        </div>
+        <button id="next-button" onclick="nextQuestion()">Наступне питання</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Що робить інструмент 'Shape Builder'?",
+                answers: ["Поєднує або видаляє перетини форм", "Додає тіні", "Обрізає зображення", "Перетворює текст"],
+                correct: 0
+            },
+            {
+                question: "Який інструмент використовується для створення плавних кривих Безьє?",
+                answers: ["Selection Tool", "Gradient Tool", "Pen Tool", "Eraser Tool"],
+                correct: 2
+            },
+            {
+                question: "Де знаходиться панель шарів (Layers)?",
+                answers: ["Window → Layers", "Edit → Layers", "File → Layers", "View → Layers"],
+                correct: 0
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 20;
+        let timerInterval;
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            timeLeft = 20;
+            document.getElementById("timer").innerText = "Час: " + timeLeft;
+            document.getElementById("question-text").innerText = questions[currentQuestion].question;
+            document.getElementById("answers").innerHTML = "";
+            document.getElementById("next-button").style.display = "none";
+            document.getElementById("result").innerText = "";
+
+            questions[currentQuestion].answers.forEach((answer, index) => {
+                let button = document.createElement("button");
+                button.classList.add("answer");
+                button.innerText = answer;
+                button.onclick = () => checkAnswer(index);
+                document.getElementById("answers").appendChild(button);
+            });
+
+            timerInterval = setInterval(function () {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById("result").innerText = "Час вийшов!";
+                    disableButtons();
+                    document.getElementById("next-button").style.display = "block";
+                } else {
+                    document.getElementById("timer").innerText = "Час: " + timeLeft;
+                }
+                timeLeft -= 1;
+            }, 1000);
+        }
+
+        function checkAnswer(selectedIndex) {
+            clearInterval(timerInterval);
+            if (selectedIndex === questions[currentQuestion].correct) {
+                document.getElementById("result").innerText = "Правильно!";
+                score++;
+            } else {
+                document.getElementById("result").innerText = "Неправильно!";
+            }
+            disableButtons();
+            document.getElementById("next-button").style.display = "block";
+        }
+
+        function disableButtons() {
+            let buttons = document.getElementsByClassName("answer");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].disabled = true;
+                buttons[i].style.cursor = "not-allowed";
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                document.getElementById("quiz-container").innerHTML = `<h2>Тест завершено!</h2>
+                <p>Ваш результат: ${score} з ${questions.length}</p>`;
+            }
+        }
+
+        loadQuestion();
+    </script>
+
+</body>
+</html>
